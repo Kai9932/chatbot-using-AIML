@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot with Menu</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    height: 100vh;
+  }
+  #chat-toggle { display: none; }
+
+  .chat-btn {
+    position: fixed; bottom: 20px; left: 20px;
+    width: 55px; height: 55px;
+    border-radius: 50%; background: #2563eb; color: #fff;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 26px; box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    cursor: pointer; transition: background 0.3s, transform 0.2s;
+  }
+  .chat-btn:hover { background: #1d4ed8; transform: scale(1.1); }
+
+  .chat-box {
+    position: fixed; bottom: 85px; left: 20px;
+    width: 300px; height: 400px;
+    background: #fff; border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    display: none; flex-direction: column; overflow: hidden;
+    animation: slideUp 0.3s ease;
+  }
+  #chat-toggle:checked + label + .chat-box { display: flex; }
+
+  .chat-header {
+    background: #2563eb; color: #fff; padding: 12px 15px;
+    font-weight: bold; display: flex; justify-content: space-between; align-items: center;
+  }
+  .close-btn { cursor: pointer; }
+
+  .chat-messages {
+    flex: 1; padding: 15px; overflow-y: auto; background: #f9fafb;
+  }
+
+  .chat-input {
+    display: flex; border-top: 1px solid #e5e7eb;
+  }
+  .chat-input input {
+    flex: 1; border: none; padding: 10px; font-size: 14px; outline: none;
+  }
+  .chat-input button {
+    background: #2563eb; color: white; border: none; padding: 10px 15px; cursor: pointer;
+  }
+
+  .menu-buttons {
+    display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;
+  }
+  .menu-buttons button {
+    flex: 1; background: #e0e7ff; border: none;
+    border-radius: 8px; padding: 6px; cursor: pointer;
+    transition: 0.3s; font-size: 13px;
+  }
+  .menu-buttons button:hover { background: #c7d2fe; }
+
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+    #typing {
+    font-style: italic;
+    color: gray;
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="chat-toggle">
+<label for="chat-toggle" class="chat-btn">💬</label>
+
+<div class="chat-box">
+  <div class="chat-header">
+    Chatbot
+    <label for="chat-toggle" class="close-btn">✕</label>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <p><strong>Bot:</strong> Hi there! How can I help you today?</p>
+    <div class="menu-buttons">
+      <button onclick="sendQuick('Order Issue')">🛒 Order Issue</button>
+      <button onclick="sendQuick('Package Issue')">📦 Package Issue</button>
+      <button onclick="sendQuick('Payment Issue')">💰 Payment Issue</button>
+    </div>
+  </div>
+  <div class="chat-input">
+    <input type="text" id="user-input" placeholder="Type a message...">
+    <button id="send-btn">Send</button>
+  </div>
+</div>
+
+<script>
+const sendBtn = document.getElementById("send-btn");
+const input = document.getElementById("user-input");
+const messages = document.getElementById("chat-messages");
+
+async function sendMessage(text) {
+  if (!text.trim()) return;
+
+  const userDiv = document.createElement("p");
+  userDiv.innerHTML = `<strong>You:</strong> ${text}`;
+  messages.appendChild(userDiv);
+  messages.scrollTop = messages.scrollHeight;
+
+  //"Bot typing..." animation
+  const typingDiv = document.createElement("p");
+  typingDiv.id = "typing";
+  typingDiv.innerHTML = `<em>Bot is typing...</em>`;
+  messages.appendChild(typingDiv);
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    //Send msg Flask backend
+    const res = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await res.json();
+
+    typingDiv.remove();
+
+    const botDiv = document.createElement("p");
+    botDiv.innerHTML = `<strong>Bot:</strong> ${data.reply}`;
+    messages.appendChild(botDiv);
+    messages.scrollTop = messages.scrollHeight;
+
+  } catch (error) {
+    typingDiv.remove();
+    const errorDiv = document.createElement("p");
+    errorDiv.innerHTML = `<strong>Bot:</strong> Sorry, something went wrong.`;
+    messages.appendChild(errorDiv);
+  }
+}
+
+sendBtn.addEventListener("click", () => {
+  const text = input.value;
+  input.value = "";
+  sendMessage(text);
+});
+
+function sendQuick(choice) {
+  sendMessage(choice);
+}
+Message(choice);
+</script>
+</body>
+</html>

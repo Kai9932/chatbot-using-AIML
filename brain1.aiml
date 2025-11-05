@@ -1,0 +1,150 @@
+<aiml version="1.0.1" encoding="UTF-8">
+
+  <!-- Greeting -->
+  <category>
+    <pattern>HELLO</pattern>
+    <template>
+      Hi there! How can I help you today? 😊  
+      You can choose from:  
+      🛒 Order Issue  
+      📦 Package Issue  
+      💳 Payment Issue.
+    </template>
+  </category>
+
+  <!-- Order Issue -->
+  <category>
+    <pattern>ORDER ISSUE</pattern>
+    <template>
+      I'm sorry to hear that 😕  
+      Can you please tell me your order number?  
+      (For example: ORDER 12345)
+    </template>
+  </category>
+
+  <!-- User provides order number -->
+  <category>
+    <pattern>ORDER *</pattern>
+    <template>
+      Okay, please wait while I check your order <star/>... 🔍  
+      <think><set name="orderno"><star/></set></think>
+      <random>
+        <li>Checking your order details...</li>
+        <li>Verifying order <get name="orderno"/>...</li>
+        <li>Retrieving order <get name="orderno"/> information...</li>
+      </random>
+      <think>
+        <set name="status">
+          <random>
+            <li>Pending</li>
+            <li>Shipped</li>
+            <li>Delivered</li>
+            <li>Processing</li>
+          </random>
+        </set>
+      </think>
+      ✅ Your order <get name="orderno"/> is currently <get name="status"/>.  
+      Expected delivery: 2–3 days. 🚚
+    </template>
+  </category>
+
+  <!-- If user types WRONG FORMAT after bot asks for order number -->
+  <category>
+    <pattern>*</pattern>
+    <that>I'm sorry to hear that 😕  Can you please tell me your order number?  (For example: ORDER 12345)</that>
+    <template>
+      Okay, please wait while I check your order <star/>... 🔍  
+      <think><set name="orderno"><star/></set></think>
+      ✅ Your order <get name="orderno"/> has been shipped.  
+      Expected delivery: 2–3 days. 🚚
+    </template>
+  </category>
+
+  <!-- Catch-all only for irrelevant inputs -->
+  <category>
+    <pattern>*</pattern>
+    <template>
+      Hmm 🤔 I didn’t quite understand that.  
+      Please choose one of the options:  
+      🛒 Order Issue  
+      📦 Package Issue  
+      💳 Payment Issue.
+    </template>
+  </category>
+
+  <!-- Package Issue -->
+  <category>
+    <pattern>PACKAGE ISSUE</pattern>
+    <template>
+      Is your package delayed, missing, or damaged?  
+      Please type one of those options.
+    </template>
+  </category>
+
+  <category>
+    <pattern>DELAYED</pattern>
+    <template>
+      I'm sorry to hear that. 😞  
+      Sometimes delays happen due to high shipping volume or weather.  
+      Please wait 1–2 more business days, or contact support if it still doesn't arrive.
+    </template>
+  </category>
+
+  <category>
+    <pattern>MISSING</pattern>
+    <template>
+      Oh no! 😟  
+      Please provide your tracking number, and I'll help check where your package is.
+    </template>
+  </category>
+
+  <category>
+    <pattern>DAMAGED</pattern>
+    <template>
+      I’m so sorry to hear your package arrived damaged. 😢  
+      Please send a photo of the damage to support@gmail.com,  
+      and we’ll arrange a replacement right away.
+    </template>
+  </category>
+
+  <!-- Payment Issue -->
+  <category>
+    <pattern>PAYMENT ISSUE</pattern>
+    <template>
+      Are you having trouble with a failed transaction or a refund?
+    </template>
+  </category>
+
+  <category>
+    <pattern>FAILED TRANSACTION</pattern>
+    <template>
+      Please check if your card has sufficient balance or try another payment method.  
+      If you were charged but didn’t receive confirmation, contact billing support.
+    </template>
+  </category>
+
+  <category>
+    <pattern>REFUND</pattern>
+    <template>
+      Refunds typically take 3–5 business days to process.  
+      Could you share your order number for me to check the refund status?
+    </template>
+  </category>
+
+  <!-- Goodbye -->
+  <category>
+    <pattern>BYE</pattern>
+    <template>
+      Goodbye! 👋 Have a great day!
+    </template>
+  </category>
+
+  <category>
+    <pattern>THANK YOU</pattern>
+    <template>
+      You're very welcome! 😊  
+      Glad I could help.
+    </template>
+  </category>
+
+</aiml>
